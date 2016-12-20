@@ -36,19 +36,21 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Integer> combinations = new ArrayList<Integer>();
 
     public void initializeCombinations(){
-        combinations.add(STATE_RED_ON_BLACK);
-        combinations.add(STATE_RED);
-        combinations.add(STATE_RED_ON_RED);
-        combinations.add(STATE_BLACK);
         combinations.add(STATE_BLACK_ON_RED);
-        combinations.add(STATE_BLACK_ON_BLACK);
 
-        foregroundOptions.add(1);
-        foregroundOptions.add(2);
+        combinations.add(STATE_RED_ON_RED);
+        combinations.add(STATE_RED);
+        combinations.add(STATE_BLACK_ON_BLACK);
+        combinations.add(STATE_RED_ON_BLACK);
+        combinations.add(STATE_BLACK);
+
 
         backgroundOptions.add(1);
         backgroundOptions.add(2);
-        backgroundOptions.add(3);
+
+        foregroundOptions.add(1);
+        foregroundOptions.add(2);
+        foregroundOptions.add(3);
 
 
     }
@@ -100,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
         int id = board.getIdOfLastTouchedView();
         output.setText("Last View touched: " + id);
         history.add(id);
+        Cell currentCell = board.getCellAt(id);
+        output.setText("The Cell has a background resource of: " + currentCell.getBackgroundResource() + "\nAnd Foreground: " + currentCell.getCellForegroundId());
         TextView current;
         if(history.size() > 1) {
             if (id != 0) {

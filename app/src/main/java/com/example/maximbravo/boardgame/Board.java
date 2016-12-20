@@ -95,6 +95,20 @@ public class Board {
         parentViewGroup.addView(boardLinear);
     }
 
+    public Cell getCellAt(int id){
+        String xypos = convertIdToPostion(id);
+        String[] pos = xypos.split("-");
+        int xpos = Integer.parseInt(pos[0]);
+        int ypos = Integer.parseInt(pos[1]);
+        Cell returnCell = board[xpos][ypos];
+        return returnCell;
+    }
+    public String convertIdToPostion(int id){
+        int x = (id-1)%mNumberOfColumns;
+        int y = (id-1)/mNumberOfRows;
+        String result = x + "-" + y;
+        return result;
+    }
     private ArrayList<Integer> totalCombinations = new ArrayList<>();
     public void addCombinations(ArrayList<Integer> combinations){
         totalCombinations = combinations;
@@ -104,8 +118,13 @@ public class Board {
             for(int columns = 0; columns < board[0].length; columns++){
                 Cell currentCell = board[rows][columns];
                 currentCell.addForegroundStateOptions(foreground);
-                currentCell.addForegroundResource(foreground.get(foreground.size()-1));
-
+                if(rows < 4 && columns < 4) {
+                    currentCell.addForegroundResource(foreground.get(0));
+                } else if (rows >= 4 && columns >= 4){
+                    currentCell.addForegroundResource(foreground.get(1));
+                } else {
+                    currentCell.addForegroundResource(foreground.get(2));
+                }
                 board[rows][columns] = currentCell;
             }
         }

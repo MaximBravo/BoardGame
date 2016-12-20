@@ -33,6 +33,12 @@ public class Cell {
     public void addBackgroundResource(int stateOption){
         cellBackgroundId = stateOption;
     }
+    public int getBackgroundResource(){
+        return cellBackgroundId;
+    }
+    public int getCellForegroundId(){
+        return cellForegroundId;
+    }
     public void addForegroundResource(int stateOption){
         cellForegroundId = stateOption;
     }
