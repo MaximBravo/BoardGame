@@ -25,6 +25,36 @@ public class MainActivity extends AppCompatActivity {
     private TextView output;
     private Board board;
     private final int BOARD_SIDE_LENGTH = 8;
+
+    private final int STATE_RED_ON_BLACK = R.drawable.redonblack;
+    private final int STATE_RED_ON_RED = R.drawable.redonred;
+    private final int STATE_RED = R.drawable.red;
+    private final int STATE_BLACK_ON_BLACK = R.drawable.blackonblack;
+    private final int STATE_BLACK_ON_RED = R.drawable.blackonred;
+    private final int STATE_BLACK = R.drawable.black;
+
+    private ArrayList<Integer> combinations = new ArrayList<Integer>();
+
+    public void initializeCombinations(){
+        combinations.add(STATE_RED_ON_BLACK);
+        combinations.add(STATE_RED);
+        combinations.add(STATE_RED_ON_RED);
+        combinations.add(STATE_BLACK);
+        combinations.add(STATE_BLACK_ON_RED);
+        combinations.add(STATE_BLACK_ON_BLACK);
+
+        foregroundOptions.add(1);
+        foregroundOptions.add(2);
+
+        backgroundOptions.add(1);
+        backgroundOptions.add(2);
+        backgroundOptions.add(3);
+
+
+    }
+
+    private ArrayList<Integer> foregroundOptions = new ArrayList<>();
+    private ArrayList<Integer> backgroundOptions = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +78,13 @@ public class MainActivity extends AppCompatActivity {
         int screenHeight = display.getHeight();
         int smallestDimmension = Math.min(screenHeight, screenWidth);
         board = new Board(this, mainContent, BOARD_SIDE_LENGTH, BOARD_SIDE_LENGTH, smallestDimmension, output);
+        initializeCombinations();
+        board.makeBoard();
+        board.addCombinations(combinations);
+        board.addBackGroundOptions(backgroundOptions);
+        board.addForeGroundOptions(foregroundOptions);
+        board.addCheckerBoardTheme();
+
     }
 
     @Override
@@ -56,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onTouchEvent(event);
     }
+
 
     private ArrayList<Integer> history = new ArrayList<Integer>();
     public void computeMove(){
