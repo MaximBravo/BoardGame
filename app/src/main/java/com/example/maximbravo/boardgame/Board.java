@@ -47,6 +47,7 @@ public class Board {
         boardLinear.setOrientation(LinearLayout.VERTICAL);
         int count = 1;
         int cellSide = mScreenWidth/(mNumberOfColumns+3);
+        int marginBoard = cellSide/20;
         int margin = 0;
         for(int rows = 0; rows < mNumberOfRows; rows++) {
             LinearLayout l = new LinearLayout(parentActivity.getApplicationContext());
@@ -56,7 +57,7 @@ public class Board {
                 TextView square = new TextView(parentActivity.getApplicationContext());
                 square.setHeight(cellSide);
                 square.setWidth(cellSide);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(cellSide, cellSide);
+                final LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(cellSide, cellSide);
                 params.setMargins(margin, margin, margin, margin);
                 square.setLayoutParams(params);
                 square.setId(count);
@@ -90,6 +91,8 @@ public class Board {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(rowWidth, rowWidth);
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
         boardLinear.setLayoutParams(params);
+        boardLinear.setPadding(marginBoard,marginBoard,marginBoard,marginBoard);
+        boardLinear.setBackgroundColor(Color.DKGRAY);
         boardLinear.setId(count);
         boardLinear.setBackgroundColor(Color.WHITE);
         parentViewGroup.addView(boardLinear);

@@ -15,7 +15,9 @@
 
     <TextView
         android:id="@+id/output"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
+        android:textSize="40sp"
+        android:gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:text="Hello World!" />
 </RelativeLayout>
