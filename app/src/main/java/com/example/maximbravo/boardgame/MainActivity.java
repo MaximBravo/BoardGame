@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ArrayList<Integer> foregroundOptions = new ArrayList<>();
     private ArrayList<Integer> backgroundOptions = new ArrayList<>();
+    private RelativeLayout mainLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
                         output.setText("Blacks Turn");
                         output.setTextColor(Color.BLACK);
                         fab.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+                        toolbar.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+                        mainLayout.setBackground(getResources().getDrawable(R.drawable.red));
                         Toast.makeText(MainActivity.this, "Blacks Turn", Toast.LENGTH_LONG);
                         history.clear();
                         lock = false;
@@ -89,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
                         output.setTextColor(Color.RED);
                         fab.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
                         Toast.makeText(MainActivity.this, "Reds Turn", Toast.LENGTH_LONG);
+                        toolbar.setBackgroundDrawable(new ColorDrawable(Color.RED));
+                        mainLayout.setBackground(getResources().getDrawable(R.drawable.black));
                         history.clear();
                         lock = false;
                     }
@@ -99,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         mainContent = (ViewGroup) findViewById(R.id.content_main);
+        mainLayout = (RelativeLayout) findViewById(R.id.content_main);
         output = (TextView) findViewById(R.id.output);
 //        flipCoin();
 //        if(redTurn){
@@ -140,14 +147,14 @@ public class MainActivity extends AppCompatActivity {
             output.setTextColor(Color.RED);
             fab.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
             toolbar.setBackgroundDrawable(new ColorDrawable(Color.RED));
-            mainContent.setBackgroundResource(R.drawable.black);
+            mainLayout.setBackground(getResources().getDrawable(R.drawable.black));
         } else {
             redTurn = false;
             output.setText("Blacks Turn");
-            output.setTextColor(Color.RED);
+            output.setTextColor(Color.BLACK);
             fab.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
             toolbar.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-            mainContent.setBackgroundResource(R.drawable.red);
+            mainLayout.setBackground(getResources().getDrawable(R.drawable.red));
         }
 
     }
