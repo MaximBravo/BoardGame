@@ -68,10 +68,10 @@ public class Board {
                     public boolean onTouch(View view, MotionEvent motionEvent) {
                         if(motionEvent.getAction() != MotionEvent.ACTION_UP) {
                             mIdOfLastTouchedView = view.getId();
-                            moutput.setText("" + mIdOfLastTouchedView);
+                            //moutput.setText("" + mIdOfLastTouchedView);
                         } else {
 
-                            moutput.setText("You are not hovering");
+                            //moutput.setText("You are not hovering");
                         }
                         return false;
                     }
@@ -102,6 +102,13 @@ public class Board {
         int ypos = Integer.parseInt(pos[1]);
         Cell returnCell = board[xpos][ypos];
         return returnCell;
+    }
+    public Cell getCellAt(int x, int y){
+        Cell returnCell = board[x][y];
+        return returnCell;
+    }
+    public String getCellPositionAt(int id){
+        return convertIdToPostion(id);
     }
     public String convertIdToPostion(int id){
         int x = (id-1)%mNumberOfColumns;
@@ -160,6 +167,16 @@ public class Board {
             }
         }
 
+    }
+    public void updateCellAt(int id){
+        String xypos = convertIdToPostion(id);
+        String[] pos = xypos.split("-");
+        int xpos = Integer.parseInt(pos[0]);
+        int ypos = Integer.parseInt(pos[1]);
+        Cell currentCell = board[xpos][ypos];
+        TextView currentText = (TextView) parentActivity.findViewById(currentCell.getCellId());
+        currentText.setBackgroundResource(currentCell.getResource(totalCombinations));
+        board[xpos][ypos] = currentCell;
     }
     public int getIdOfLastTouchedView(){
         return mIdOfLastTouchedView;
