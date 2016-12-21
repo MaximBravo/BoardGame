@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-                if(history.size() != 0) {
+                if(history.size() > 1) {
                     if (redTurn) {
                         redTurn = false;
                         output.setText("Blacks Turn");
@@ -135,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
         board.addBackGroundOptions(backgroundOptions);
         board.addForeGroundOptions(foregroundOptions);
         board.addCheckerBoardTheme();
+        lastMove = 0;
+        history.clear();
 
     }
     public void flipCoin(){
@@ -160,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        computeMove();
+        newComputeMove();
 
         return super.onTouchEvent(event);
     }
@@ -169,6 +171,75 @@ public class MainActivity extends AppCompatActivity {
     private int originalId = 1;
     private int lastId = 0;
     private ArrayList<Integer> history = new ArrayList<Integer>();
+
+    public void newComputeMove(){
+        int touchedId = board.getIdOfLastTouchedView();
+        //something on the board has been touched
+        if(touchedId != 0){
+            Cell touchedCell = board.getCellAt(touchedId);
+            //if it is right side than see if first move in turn
+            if(history.size() == 0){
+                //check if piece picked up is the right color
+                if(((redTurn && touchedCell.getCellForegroundId() == 2) || (!redTurn && touchedCell.getCellForegroundId() == 1)) && !isRepeat(touchedId)) {
+                    if(board.getIdOfLastTouchedView() != originalId) {
+                        originalId = touchedId;
+                        history.add(originalId);
+                    }
+                }
+            } else {
+                boolean verified = verify(touchedId);
+                //check for place back
+                if(!isRepeat(touchedId) && touchedId == originalId){
+                    move(getLastIdInHistory(), touchedId);
+                    history.clear();
+                }
+                //verify if can move
+                else if(verified){
+                    move(getLastIdInHistory(), touchedId);
+                    history.add(touchedId);
+                }
+            }
+        }
+    }
+    public void move(int firstid, int secondId){
+        Cell firstCell = board.getCellAt(firstid);
+        int firstCellforegroundId = firstCell.getCellForegroundId();
+        Cell secondCell = board.getCellAt(secondId);
+        int secondCellForegroundId = secondCell.getCellForegroundId();
+
+        firstCell.addForegroundResource(secondCellForegroundId);
+        secondCell.addForegroundResource(firstCellforegroundId);
+
+        board.setCellAtBlankTo(firstid, firstCell);
+        board.setCellAtBlankTo(secondId, secondCell);
+    }
+    public boolean isRepeat(int id){
+        if(id == getLastIdInHistory()){
+            return true;
+        }
+        return false;
+    }
+    public boolean verify(int touchedId){
+        if(isRepeat(touchedId)){
+            return false;
+        }
+        //we know there is a different click
+        Cell touchedCell = board.getCellAt(touchedId);
+        if(touchedCell.getCellForegroundId() != 3){
+            return false;
+        }
+        //we know the touch is blank
+        return true;
+
+    }
+
+    public int getLastIdInHistory(){
+        if(history.size() == 0){
+            return 0;
+        } else {
+            return history.get(history.size()-1);
+        }
+    }
     public void computeMove(){
         int id = board.getIdOfLastTouchedView();
         if(id != 0) {
@@ -243,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private int lastMove = 0;
     public int canSwap(int prevId, int currentId){
         String xypos1 = board.getCellPositionAt(prevId);
         String[] pos1 = xypos1.split("-");
@@ -253,6 +325,11 @@ public class MainActivity extends AppCompatActivity {
         int xpos2 = Integer.parseInt(pos2[0]);
         int ypos2 = Integer.parseInt(pos2[1]);
         int betweenCell = getCellBetween(xpos1, ypos1, xpos2, ypos2);
+
+        if(lastMove == 1){
+            return 0;
+        }
+        lastMove = betweenCell;
         return betweenCell;
     }
     public int getCellBetween(int x1, int y1, int x2, int y2){
@@ -272,11 +349,13 @@ public class MainActivity extends AppCompatActivity {
         } else if(y1 == y2){
             int difference = x1 - x2;
             if(Math.abs(difference) == 2){
-                if(board.getCellAt(x1 + difference/2, y1).getCellForegroundId() != 3) {
+                int newx = x1 + difference/2;
+                if(board.getCellAt(newx, y1).getCellForegroundId() != 3) {
                     return 2;
                 }
             } else if(Math.abs(difference) == 1){
-                if(board.getCellAt(x1 + difference, y1).getCellForegroundId() == 3) {
+                int newx = x1 + difference;
+                if(board.getCellAt(newx, y1).getCellForegroundId() == 3) {
                     return 1;
                 }
             }

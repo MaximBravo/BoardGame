@@ -181,6 +181,14 @@ public class Board {
         currentText.setBackgroundResource(currentCell.getResource(totalCombinations));
         board[xpos][ypos] = currentCell;
     }
+    public void setCellAtBlankTo(int id, Cell newcell){
+        String xypos = convertIdToPostion(id);
+        String[] pos = xypos.split("-");
+        int xpos = Integer.parseInt(pos[0]);
+        int ypos = Integer.parseInt(pos[1]);
+        board[xpos][ypos] = newcell;
+        updateCellAt(id);
+    }
     public int getIdOfLastTouchedView(){
         return mIdOfLastTouchedView;
     }
