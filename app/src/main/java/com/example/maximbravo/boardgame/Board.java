@@ -24,7 +24,8 @@ public class Board {
     private ViewGroup parentViewGroup;
     private TextView moutput;
     private Cell[][] board;
-    public Board(Activity activity, ViewGroup viewGroup, int numberOfRows, int numberOfColumns, int screenWidth, TextView output){
+    private  int divider;
+    public Board(Activity activity, ViewGroup viewGroup, int numberOfRows, int numberOfColumns, int screenWidth, TextView output, int d){
         parentActivity = activity;
         mNumberOfColumns = numberOfColumns;
         mNumberOfRows = numberOfRows;
@@ -32,6 +33,7 @@ public class Board {
         mIdOfLastTouchedView = 0;
         parentViewGroup = viewGroup;
         moutput = output;
+        divider = d;
         board = new Cell[numberOfRows][numberOfColumns];
 
     }
@@ -46,7 +48,7 @@ public class Board {
         LinearLayout boardLinear = new LinearLayout(parentActivity.getApplicationContext());
         boardLinear.setOrientation(LinearLayout.VERTICAL);
         int count = 1;
-        int cellSide = mScreenWidth/(mNumberOfColumns+3);
+        int cellSide = mScreenWidth/(mNumberOfColumns+divider);
         int marginBoard = cellSide/20;
         int margin = 0;
         for(int rows = 0; rows < mNumberOfRows; rows++) {
@@ -128,9 +130,9 @@ public class Board {
             for(int columns = 0; columns < board[0].length; columns++){
                 Cell currentCell = board[rows][columns];
                 currentCell.addForegroundStateOptions(foreground);
-                if(rows < 4 && columns < 4) {
+                if(rows < 4 && columns < 3) {
                     currentCell.addForegroundResource(foreground.get(0));
-                } else if (rows >= 4 && columns >= 4){
+                } else if (rows >= 4 && columns > 4){
                     currentCell.addForegroundResource(foreground.get(1));
                 } else {
                     currentCell.addForegroundResource(foreground.get(2));

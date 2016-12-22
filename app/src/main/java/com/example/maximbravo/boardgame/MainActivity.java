@@ -1,6 +1,5 @@
 package com.example.maximbravo.boardgame;
 
-import android.app.ActionBar;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -86,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
                         mainLayout.setBackground(getResources().getDrawable(R.drawable.red));
                         Toast.makeText(MainActivity.this, "Blacks Turn", Toast.LENGTH_LONG);
                         history.clear();
+                        previousMove = 0;
+                        originalId = 0;
                         lock = false;
                     } else {
                         redTurn = true;
@@ -96,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
                         toolbar.setBackgroundDrawable(new ColorDrawable(Color.RED));
                         mainLayout.setBackground(getResources().getDrawable(R.drawable.black));
                         history.clear();
+                        previousMove = 0;
+                        originalId = 0;
                         lock = false;
                     }
                 } else {
@@ -121,7 +124,11 @@ public class MainActivity extends AppCompatActivity {
         int screenWidth = display.getWidth();
         int screenHeight = display.getHeight();
         int smallestDimmension = Math.min(screenHeight, screenWidth);
-        board = new Board(this, mainContent, BOARD_SIDE_LENGTH, BOARD_SIDE_LENGTH, smallestDimmension, output);
+        int divider = 3;
+        if(smallestDimmension == screenWidth){
+            divider = 2;
+        }
+        board = new Board(this, mainContent, BOARD_SIDE_LENGTH, BOARD_SIDE_LENGTH, smallestDimmension, output, divider);
         initializeCombinations();
         board.makeBoard();
         startGame();
@@ -162,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        newComputeMove();
+        playCheckersGame();
 
         return super.onTouchEvent(event);
     }
@@ -172,7 +179,8 @@ public class MainActivity extends AppCompatActivity {
     private int lastId = 0;
     private ArrayList<Integer> history = new ArrayList<Integer>();
 
-    public void newComputeMove(){
+    private int previousMove = 0;
+    public void playCheckersGame(){
         int touchedId = board.getIdOfLastTouchedView();
         //something on the board has been touched
         if(touchedId != 0){
@@ -188,18 +196,70 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else {
                 boolean verified = verify(touchedId);
+
                 //check for place back
                 if(!isRepeat(touchedId) && touchedId == originalId){
                     move(getLastIdInHistory(), touchedId);
+//                    originalId = 0;
+                    previousMove = 0;
                     history.clear();
                 }
                 //verify if can move
                 else if(verified){
-                    move(getLastIdInHistory(), touchedId);
-                    history.add(touchedId);
+                    if(previousMove != 1){
+                        int possibleMove = getMove(getLastIdInHistory(), touchedId);
+                        if(possibleMove == 2) {
+                            move(getLastIdInHistory(), touchedId);
+                            history.add(touchedId);
+                            previousMove = 2;
+                        }
+                        if (possibleMove == 1){
+                            if(previousMove == 0) {
+                                move(getLastIdInHistory(), touchedId);
+                                history.add(touchedId);
+                                previousMove = 1;
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+    public int getMove(int prevId, int currentId){
+        String xypos1 = board.getCellPositionAt(prevId);
+        String[] pos1 = xypos1.split("-");
+        int x1 = Integer.parseInt(pos1[0]);
+        int y1 = Integer.parseInt(pos1[1]);
+        String xypos2 = board.getCellPositionAt(currentId);
+        String[] pos2 = xypos2.split("-");
+        int x2 = Integer.parseInt(pos2[0]);
+        int y2 = Integer.parseInt(pos2[1]);
+
+        if(x1 == x2){
+            int difference = y1 - y2;
+            if(Math.abs(difference) == 2){
+                int newy = Math.min(y1, y2) + 1;
+                if(board.getCellAt(x1, newy).getCellForegroundId() != 3) {
+                    return 2;
+                }
+            } else if (Math.abs(difference) == 1){
+                return 1;
+            }
+        } else if(y1 == y2){
+            int difference = x1 - x2;
+            if(Math.abs(difference) == 2){
+                int newx = Math.min(x1, x2) + 1;
+                if(board.getCellAt(newx, y1).getCellForegroundId() != 3) {
+                    return 2;
+                }
+            } else if(Math.abs(difference) == 1){
+                return 1;
+            }
+        } else {
+            return 0;
+        }
+        return 0;
+
     }
     public void move(int firstid, int secondId){
         Cell firstCell = board.getCellAt(firstid);
@@ -226,6 +286,13 @@ public class MainActivity extends AppCompatActivity {
         //we know there is a different click
         Cell touchedCell = board.getCellAt(touchedId);
         if(touchedCell.getCellForegroundId() != 3){
+            if(((redTurn && touchedCell.getCellForegroundId() == 2) || (!redTurn && touchedCell.getCellForegroundId() == 1))) {
+                if(board.getIdOfLastTouchedView() != originalId && history.size() == 1) {
+                    originalId = touchedId;
+                    history.clear();
+                    history.add(originalId);
+                }
+            }
             return false;
         }
         //we know the touch is blank
