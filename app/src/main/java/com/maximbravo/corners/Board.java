@@ -2,7 +2,6 @@ package com.maximbravo.corners;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,9 +95,6 @@ public class Board {
         boardLinear.setLayoutParams(params);
         boardLinear.setPadding(marginBoard,marginBoard,marginBoard,marginBoard);
         boardLinear.setBackgroundColor(Color.DKGRAY);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            boardLinear.setElevation(10);
-        }
         boardLinear.setId(count);
         boardLinear.setBackgroundColor(Color.WHITE);
         parentViewGroup.addView(boardLinear);

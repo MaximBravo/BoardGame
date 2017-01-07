@@ -7,10 +7,4 @@
         android:orderInCategory="100"
         android:title="Restart Game?"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/hover_button"
-        android:checkable="true"
-        android:title="Play Mode"
-        app:showAsAction="always"
-        />
 </menu>
