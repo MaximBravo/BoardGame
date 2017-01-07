@@ -3,4 +3,9 @@
     <color name="colorPrimary">#111111</color>
     <color name="colorPrimaryDark">#111111</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="side1Color">#FF4081</color>
+    <color name="side2Color">#FF4081</color>
+
+
 </resources>

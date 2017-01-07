@@ -2,10 +2,10 @@ package com.example.maximbravo.boardgame;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.Toolbar;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -76,26 +76,26 @@ public class MainActivity extends AppCompatActivity {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
                 if(history.size() > 1) {
-                    if (redTurn) {
-                        redTurn = false;
+                    if (whiteTurn) {
+                        whiteTurn = false;
                         output.setText("Blacks Turn");
                         output.setTextColor(Color.BLACK);
                         fab.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
-                        toolbar.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-                        mainLayout.setBackground(getResources().getDrawable(R.drawable.red));
+
+                        mainLayout.setBackgroundColor(Color.WHITE);
                         Toast.makeText(MainActivity.this, "Blacks Turn", Toast.LENGTH_LONG);
                         history.clear();
                         previousMove = 0;
                         originalId = 0;
                         lock = false;
                     } else {
-                        redTurn = true;
-                        output.setText("Reds Turn");
-                        output.setTextColor(Color.RED);
-                        fab.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
+                        whiteTurn = true;
+                        output.setText("Whites Turn");
+                        output.setTextColor(Color.WHITE);
+                        fab.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
                         Toast.makeText(MainActivity.this, "Reds Turn", Toast.LENGTH_LONG);
-                        toolbar.setBackgroundDrawable(new ColorDrawable(Color.RED));
-                        mainLayout.setBackground(getResources().getDrawable(R.drawable.black));
+
+                        mainLayout.setBackgroundColor(Color.BLACK);
                         history.clear();
                         previousMove = 0;
                         originalId = 0;
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         mainLayout = (RelativeLayout) findViewById(R.id.content_main);
         output = (TextView) findViewById(R.id.output);
 //        flipCoin();
-//        if(redTurn){
+//        if(whiteTurn){
 //            fab.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
 //            mainContent.setBackgroundResource(R.drawable.black);
 //        } else {
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         int smallestDimmension = Math.min(screenHeight, screenWidth);
         int divider = 3;
         if(smallestDimmension == screenWidth){
-            divider = 2;
+            divider = 1;
         }
         board = new Board(this, mainContent, BOARD_SIDE_LENGTH, BOARD_SIDE_LENGTH, smallestDimmension, output, divider);
         initializeCombinations();
@@ -142,39 +142,49 @@ public class MainActivity extends AppCompatActivity {
         board.addBackGroundOptions(backgroundOptions);
         board.addForeGroundOptions(foregroundOptions);
         board.addCheckerBoardTheme();
-        lastMove = 0;
-        history.clear();
 
+        history.clear();
+        if(whiteTurn){
+            toolbar.setBackgroundColor(Color.WHITE);
+            toolbar.setTitleTextColor(Color.BLACK);
+        } else {
+            toolbar.setBackgroundColor(Color.BLACK);
+            toolbar.setTitleTextColor(Color.WHITE);
+        }
     }
     public void flipCoin(){
         Random randomNum = new Random();
         int result = 0;
-        result = randomNum.nextInt(2);
+        //result = randomNum.nextInt(2);
         if(result == 1){
-            redTurn = true;
-            output.setText("Reds Turn");
-            output.setTextColor(Color.RED);
-            fab.setBackgroundTintList(ColorStateList.valueOf(Color.RED));
-            toolbar.setBackgroundDrawable(new ColorDrawable(Color.RED));
-            mainLayout.setBackground(getResources().getDrawable(R.drawable.black));
+            whiteTurn = true;
+            output.setText("White Turn");
+            output.setTextColor(Color.WHITE);
+            fab.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+
+            mainLayout.setBackgroundColor(Color.BLACK);
         } else {
-            redTurn = false;
+            whiteTurn = false;
             output.setText("Blacks Turn");
             output.setTextColor(Color.BLACK);
             fab.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
-            toolbar.setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-            mainLayout.setBackground(getResources().getDrawable(R.drawable.red));
+
+            mainLayout.setBackgroundColor(Color.WHITE);
         }
 
     }
+    private boolean hoverMode = false;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        playCheckersGame();
 
+        if(!hoverMode) {
+            playCheckersGame();
+        }
         return super.onTouchEvent(event);
     }
 
-    private boolean redTurn = true;
+
+    private boolean whiteTurn = true;
     private int originalId = 1;
     private int lastId = 0;
     private ArrayList<Integer> history = new ArrayList<Integer>();
@@ -188,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
             //if it is right side than see if first move in turn
             if(history.size() == 0){
                 //check if piece picked up is the right color
-                if(((redTurn && touchedCell.getCellForegroundId() == 2) || (!redTurn && touchedCell.getCellForegroundId() == 1)) && !isRepeat(touchedId)) {
+                if(((whiteTurn && touchedCell.getCellForegroundId() == 2) || (!whiteTurn && touchedCell.getCellForegroundId() == 1)) && !isRepeat(touchedId)) {
                     if(board.getIdOfLastTouchedView() != originalId) {
                         originalId = touchedId;
                         history.add(originalId);
@@ -286,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
         //we know there is a different click
         Cell touchedCell = board.getCellAt(touchedId);
         if(touchedCell.getCellForegroundId() != 3){
-            if(((redTurn && touchedCell.getCellForegroundId() == 2) || (!redTurn && touchedCell.getCellForegroundId() == 1))) {
+            if(((whiteTurn && touchedCell.getCellForegroundId() == 2) || (!whiteTurn && touchedCell.getCellForegroundId() == 1))) {
                 if(board.getIdOfLastTouchedView() != originalId && history.size() == 1) {
                     originalId = touchedId;
                     history.clear();
@@ -307,129 +317,15 @@ public class MainActivity extends AppCompatActivity {
             return history.get(history.size()-1);
         }
     }
-    public void computeMove(){
-        int id = board.getIdOfLastTouchedView();
-        if(id != 0) {
-            //output.setText("Last View touched: " + id);
-
-            Cell currentCell = board.getCellAt(id);
-            //output.setText("The Cell has a background resource of: " + currentCell.getBackgroundResource() + "\nAnd Foreground: " + currentCell.getCellForegroundId());
-
-
-            if (history.size() >= 1) {
-
-                //second move in series
-                if (history.size() % 2 == 1) {
-                    //second move in series is blank
-                    if (currentCell.getCellForegroundId() == 3 && canSwap(history.get(history.size() - 1), id) != 0) {
-                        history.add(id);
-                        int currentForeground = currentCell.getCellForegroundId();
-                        Cell previous = board.getCellAt(history.get(history.size() - 2));
-                        int previousForeground = previous.getCellForegroundId();
-                        currentCell.addForegroundResource(previousForeground);
-                        previous.addForegroundResource(currentForeground);
-
-                        board.updateCellAt(id);
-                        board.updateCellAt(history.get(history.size() - 2));
-                        if (id == originalId) {
-
-                            lastId = id;
-                            history.clear();
-                        }
-                    } else {
-                        Toast.makeText(this, "Sorry you cannot move their.", Toast.LENGTH_SHORT);
-                    }
-                } else {
-                    if (redTurn) {
-                        if (currentCell.getCellForegroundId() == 2) {
-                            if (lastId != id) {
-                                history.add(id);
-                                lastId = 0;
-                            }
-                        }
-                    } else {
-                        if (currentCell.getCellForegroundId() == 1) {
-                            if (lastId != id) {
-                                history.add(id);
-                                lastId = 0;
-                            }
-                        }
-                    }
-
-                }
-
-            } else {
-                if (redTurn) {
-                    if (currentCell.getCellForegroundId() == 2) {
-                        if (lastId != id) {
-                            history.add(id);
-                            lastId = 0;
-                            originalId = id;
-                        }
-                    }
-                } else {
-                    if (currentCell.getCellForegroundId() == 1) {
-                        if (lastId != id) {
-                            history.add(id);
-                            lastId = 0;
-                            originalId = id;
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-    private int lastMove = 0;
-    public int canSwap(int prevId, int currentId){
-        String xypos1 = board.getCellPositionAt(prevId);
-        String[] pos1 = xypos1.split("-");
-        int xpos1 = Integer.parseInt(pos1[0]);
-        int ypos1 = Integer.parseInt(pos1[1]);
-        String xypos2 = board.getCellPositionAt(currentId);
-        String[] pos2 = xypos2.split("-");
-        int xpos2 = Integer.parseInt(pos2[0]);
-        int ypos2 = Integer.parseInt(pos2[1]);
-        int betweenCell = getCellBetween(xpos1, ypos1, xpos2, ypos2);
-
-        if(lastMove == 1){
-            return 0;
-        }
-        lastMove = betweenCell;
-        return betweenCell;
-    }
-    public int getCellBetween(int x1, int y1, int x2, int y2){
-        if(x1 == x2){
-            int difference = y1 - y2;
-            if(Math.abs(difference) == 2){
-                int newy = y1 + difference/2;
-                if(board.getCellAt(x1, newy).getCellForegroundId() != 3) {
-                    return 2;
-                }
-            } else if (Math.abs(difference) == 1){
-                int newy = y1 + difference;
-                if(board.getCellAt(x1, newy).getCellForegroundId() == 3) {
-                    return 1;
-                }
-            }
-        } else if(y1 == y2){
-            int difference = x1 - x2;
-            if(Math.abs(difference) == 2){
-                int newx = x1 + difference/2;
-                if(board.getCellAt(newx, y1).getCellForegroundId() != 3) {
-                    return 2;
-                }
-            } else if(Math.abs(difference) == 1){
-                int newx = x1 + difference;
-                if(board.getCellAt(newx, y1).getCellForegroundId() == 3) {
-                    return 1;
-                }
-            }
+    public void updateMode(){
+        ActionMenuItemView hoverButton = (ActionMenuItemView) findViewById(R.id.hover_button);
+        if(hoverMode){
+            hoverMode = false;
+            hoverButton.setTitle("Play Mode");
         } else {
-            return 0;
+            hoverMode = true;
+            hoverButton.setTitle("Hover Mode");
         }
-        return 0;
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -449,6 +345,10 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_restart) {
             startGame();
+            return true;
+        }
+        if(id == R.id.hover_button){
+            updateMode();
             return true;
         }
 
