@@ -1,4 +1,4 @@
-package com.maximbravo.corners;
+package com.example.maximbravo.boardgame;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

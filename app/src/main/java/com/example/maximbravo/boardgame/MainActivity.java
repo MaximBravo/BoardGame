@@ -1,4 +1,4 @@
-package com.maximbravo.corners;
+package com.example.maximbravo.boardgame;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -16,8 +16,6 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.maximbravo.corners.R;
 
 import java.util.ArrayList;
 import java.util.Random;
