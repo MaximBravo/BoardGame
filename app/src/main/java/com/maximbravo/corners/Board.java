@@ -1,4 +1,4 @@
-package com.example.maximbravo.boardgame;
+package com.maximbravo.corners;
 
 import android.app.Activity;
 import android.graphics.Color;
