@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private Board board;
     private final int BOARD_SIDE_LENGTH = 8;
 
+    private boolean twoPlayerMode = false;
     private final int STATE_RED_ON_BLACK = R.drawable.redonblack;
     private final int STATE_RED_ON_RED = R.drawable.redonred;
     private final int STATE_RED = R.drawable.red;
@@ -62,6 +63,11 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Integer> foregroundOptions = new ArrayList<>();
     private ArrayList<Integer> backgroundOptions = new ArrayList<>();
     private RelativeLayout mainLayout;
+
+    private final String BLACK_TURN_DIALOG = "Black Turn";
+    private final String WHITE_TURN_DIALOG = "White Turn";
+    private final String YOUR_TURN_DIALOG = "Your Turn";
+    private final String COMPUTER_TURN_DIALOG = "My Turn";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,22 +86,30 @@ public class MainActivity extends AppCompatActivity {
                 if(history.size() > 1) {
                     if (whiteTurn) {
                         whiteTurn = false;
-                        output.setText("Blacks Turn");
+                        if(twoPlayerMode) {
+                            output.setText(BLACK_TURN_DIALOG);
+                        } else {
+                            output.setText(YOUR_TURN_DIALOG);
+                        }
                         output.setTextColor(Color.BLACK);
                         fab.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
 
                         mainLayout.setBackgroundColor(Color.WHITE);
-                        Toast.makeText(MainActivity.this, "Blacks Turn", Toast.LENGTH_LONG);
+                        Toast.makeText(MainActivity.this, BLACK_TURN_DIALOG, Toast.LENGTH_LONG);
                         history.clear();
                         previousMove = 0;
                         originalId = 0;
                         lock = false;
                     } else {
                         whiteTurn = true;
-                        output.setText("Whites Turn");
+                        if(twoPlayerMode) {
+                            output.setText(WHITE_TURN_DIALOG);
+                        } else {
+                            output.setText(COMPUTER_TURN_DIALOG);
+                        }
                         output.setTextColor(Color.WHITE);
                         fab.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
-                        Toast.makeText(MainActivity.this, "Reds Turn", Toast.LENGTH_LONG);
+                        Toast.makeText(MainActivity.this, WHITE_TURN_DIALOG, Toast.LENGTH_LONG);
 
                         mainLayout.setBackgroundColor(Color.BLACK);
                         history.clear();
@@ -160,14 +174,22 @@ public class MainActivity extends AppCompatActivity {
         //result = randomNum.nextInt(2);
         if(result == 1){
             whiteTurn = true;
-            output.setText("White Turn");
+            if(twoPlayerMode) {
+                output.setText(WHITE_TURN_DIALOG);
+            } else {
+                output.setText(COMPUTER_TURN_DIALOG);
+            }
             output.setTextColor(Color.WHITE);
             fab.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
 
             mainLayout.setBackgroundColor(Color.BLACK);
         } else {
             whiteTurn = false;
-            output.setText("Blacks Turn");
+            if(twoPlayerMode) {
+                output.setText(BLACK_TURN_DIALOG);
+            } else {
+                output.setText(YOUR_TURN_DIALOG);
+            }
             output.setTextColor(Color.BLACK);
             fab.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
 
@@ -194,46 +216,52 @@ public class MainActivity extends AppCompatActivity {
     private int previousMove = 0;
     public void playCheckersGame(){
         int touchedId = board.getIdOfLastTouchedView();
-        //something on the board has been touched
-        if(touchedId != 0){
-            Cell touchedCell = board.getCellAt(touchedId);
-            //if it is right side than see if first move in turn
-            if(history.size() == 0){
-                //check if piece picked up is the right color
-                if(((whiteTurn && touchedCell.getCellForegroundId() == 2) || (!whiteTurn && touchedCell.getCellForegroundId() == 1)) && !isRepeat(touchedId)) {
-                    if(board.getIdOfLastTouchedView() != originalId) {
-                        originalId = touchedId;
-                        history.add(originalId);
-                    }
-                }
-            } else {
-                boolean verified = verify(touchedId);
-
-                //check for place back
-                if(!isRepeat(touchedId) && touchedId == originalId){
-                    move(getLastIdInHistory(), touchedId);
-//                    originalId = 0;
-                    previousMove = 0;
-                    history.clear();
-                }
-                //verify if can move
-                else if(verified){
-                    if(previousMove != 1){
-                        int possibleMove = getMove(getLastIdInHistory(), touchedId);
-                        if(possibleMove == 2) {
-                            move(getLastIdInHistory(), touchedId);
-                            history.add(touchedId);
-                            previousMove = 2;
+        if(!twoPlayerMode) {
+            if(!whiteTurn) {
+                //something on the board has been touched
+                if (touchedId != 0) {
+                    Cell touchedCell = board.getCellAt(touchedId);
+                    //if it is right side than see if first move in turn
+                    if (history.size() == 0) {
+                        //check if piece picked up is the right color
+                        if (((whiteTurn && touchedCell.getCellForegroundId() == 2) || (!whiteTurn && touchedCell.getCellForegroundId() == 1)) && !isRepeat(touchedId)) {
+                            if (board.getIdOfLastTouchedView() != originalId) {
+                                originalId = touchedId;
+                                history.add(originalId);
+                            }
                         }
-                        if (possibleMove == 1){
-                            if(previousMove == 0) {
-                                move(getLastIdInHistory(), touchedId);
-                                history.add(touchedId);
-                                previousMove = 1;
+                    } else {
+                        boolean verified = verify(touchedId);
+
+                        //check for place back
+                        if (!isRepeat(touchedId) && touchedId == originalId) {
+                            move(getLastIdInHistory(), touchedId);
+//                    originalId = 0;
+                            previousMove = 0;
+                            history.clear();
+                        }
+                        //verify if can move
+                        else if (verified) {
+                            if (previousMove != 1) {
+                                int possibleMove = getMove(getLastIdInHistory(), touchedId);
+                                if (possibleMove == 2) {
+                                    move(getLastIdInHistory(), touchedId);
+                                    history.add(touchedId);
+                                    previousMove = 2;
+                                }
+                                if (possibleMove == 1) {
+                                    if (previousMove == 0) {
+                                        move(getLastIdInHistory(), touchedId);
+                                        history.add(touchedId);
+                                        previousMove = 1;
+                                    }
+                                }
                             }
                         }
                     }
                 }
+            } else {
+                //computers Move
             }
         }
     }
